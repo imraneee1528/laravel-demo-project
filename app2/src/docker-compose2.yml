@@ -1,0 +1,65 @@
+version: '2.0'
+services:
+ 
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: imraneee/php
+    container_name: app2
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app2
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html/
+    ports:
+      - "9001:9000"
+    volumes:
+      - ./:/var/www/html/
+      - ./php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+    networks:
+      - app-network2
+ 
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver2
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "81:80" 
+    volumes:
+      - ./:/var/www/html/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network2
+ 
+  #MySQL Service
+  db:
+    image: mysql:5.7.32
+    container_name: db2
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: laravel_web
+      MYSQL_ROOT_PASSWORD: replace_mysql_root_password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata2:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network2
+ 
+#Docker Networks
+networks:
+  app-network2:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata2:
+    driver: local
