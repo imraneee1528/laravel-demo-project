@@ -16,4 +16,4 @@ cd ~
 
 laravel-demo-project/app2/src
 
-docker-compose -p app1 -f docker-compose-app2.yml up -d
+docker-compose -p app2 -f docker-compose-app2.yml up -d
